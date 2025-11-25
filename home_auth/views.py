@@ -15,7 +15,7 @@ def signup_view(request):
         last_name = request.POST['last_name']
         email = request.POST['email']
         password = request.POST['password']
-        role = request.POST.get('role')  # Get role from the form (student, teacher, or admin)
+        role = request.POST.get('role', 'student')  # Default to 'student' if not provided
 
         # Check if user with this email already exists
         if CustomUser.objects.filter(email=email).exists():
@@ -32,13 +32,16 @@ def signup_view(request):
                 password=password,
             )
 
-            # Assign the appropriate role
+            # Assign the appropriate role (defaults to student)
             if role == 'student':
                 user.is_student = True
             elif role == 'teacher':
                 user.is_teacher = True
             elif role == 'admin':
                 user.is_admin = True
+            else:
+                # Fallback: if role is invalid or missing, default to student
+                user.is_student = True
 
             user.save()  # Save the user with the assigned role
             login(request, user)
