@@ -273,7 +273,7 @@
               if (notiDropdown) {
                   // Add a click event listener to the notification dropdown
                   notiDropdown.addEventListener('click', function() {
-                      const url = "{% url 'mark_notifications_as_read' %}";
+                      const url = "{% url 'mark_notification_as_read' %}";
       
                       // Use the Fetch API to send a POST request to mark notifications as read
                       fetch(url, {
