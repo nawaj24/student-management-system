@@ -273,7 +273,7 @@
               if (notiDropdown) {
                   // Add a click event listener to the notification dropdown
                   notiDropdown.addEventListener('click', function() {
-                      const url = "{% url 'mark_notifications_as_read' %}";
+                      const url = "{% url 'mark_notification_as_read' %}";
       
                       // Use the Fetch API to send a POST request to mark notifications as read
                       fetch(url, {
@@ -302,7 +302,7 @@
               if (clearAllBtn) {
                   // Add a click event listener to the "Clear All" button
                   clearAllBtn.addEventListener('click', function() {
-                      const clearUrl = "{% url 'clear_all_notifications' %}";  // Ensure this URL points to the correct view
+                      const clearUrl = "{% url 'clear_all_notification' %}";  // Ensure this URL points to the correct view
       
                       // Use Fetch to send a POST request to clear all notifications
                       fetch(clearUrl, {
