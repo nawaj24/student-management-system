@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.crypto import get_random_string
+from django.db import IntegrityError
 
 
 def signup_view(request):
@@ -15,28 +16,37 @@ def signup_view(request):
         email = request.POST['email']
         password = request.POST['password']
         role = request.POST.get('role')  # Get role from the form (student, teacher, or admin)
-        
-        # Create the user
-        user = CustomUser.objects.create_user(
-            username=email,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=password,
-        )
-        
-        # Assign the appropriate role
-        if role == 'student':
-            user.is_student = True
-        elif role == 'teacher':
-            user.is_teacher = True
-        elif role == 'admin':
-            user.is_admin = True
 
-        user.save()  # Save the user with the assigned role
-        login(request, user)
-        messages.success(request, 'Signup successful!')
-        return redirect('index')  # Redirect to the index or home page
+        # Check if user with this email already exists
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, 'An account with this email already exists.')
+            return render(request, 'authentication/register.html')
+
+        try:
+            # Create the user
+            user = CustomUser.objects.create_user(
+                username=email,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=password,
+            )
+
+            # Assign the appropriate role
+            if role == 'student':
+                user.is_student = True
+            elif role == 'teacher':
+                user.is_teacher = True
+            elif role == 'admin':
+                user.is_admin = True
+
+            user.save()  # Save the user with the assigned role
+            login(request, user)
+            messages.success(request, 'Signup successful!')
+            return redirect('index')  # Redirect to the index or home page
+        except IntegrityError:
+            messages.error(request, 'An account with this email or username already exists.')
+            return render(request, 'authentication/register.html')
     return render(request, 'authentication/register.html')  # Render signup template
 
 
