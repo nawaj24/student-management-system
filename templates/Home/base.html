@@ -56,10 +56,10 @@
                               <a href="#">
                                  <div class="media">
                                     <span class="avatar avatar-sm">
-                                    <img class="avatar-img rounded-circle" alt="User Image" src="assets/img/profiles/avatar-02.jpg">
+                                    <img class="avatar-img rounded-circle" alt="User Image" src="{% static 'assets/img/profiles/avatar-02.jpg' %}">
                                     </span>
                                     <div class="media-body">
-                                       <p class="noti-details"><span class="noti-title">{{ notification.user.username }}</span> {{ notification.message }} <span class="noti-title">your estimate</span></p>
+                                       <p class="noti-details"><span class="noti-title">{{ notification.user.username }}</span> {{ notification.message }}</p>
                                        <p class="noti-time"><span class="notification-time">{{ notification.created_at|timesince }} ago</span></p>
                                     </div>
                                  </div>
@@ -76,12 +76,12 @@
                </li>
                <li class="nav-item dropdown has-arrow">
                   <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                  <span class="user-img"><img class="rounded-circle" src="assets/img/profiles/avatar-01.jpg" width="31" alt="Ryan Taylor"></span>
+                  <span class="user-img"><img class="rounded-circle" src="{% static 'assets/img/profiles/avatar-01.jpg' %}" width="31" alt="Ryan Taylor"></span>
                   </a>
                   <div class="dropdown-menu">
                      <div class="user-header">
                         <div class="avatar avatar-sm">
-                           <img src="assets/img/profiles/avatar-01.jpg" alt="User Image" class="avatar-img rounded-circle">
+                           <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="avatar-img rounded-circle">
                         </div>
                         <div class="user-text">
                            <h6>{{user.username}}</h6>
