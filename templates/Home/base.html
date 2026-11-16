@@ -18,11 +18,11 @@
       <div class="main-wrapper">
          <div class="header">
             <div class="header-left">
-               <a href="index.html" class="logo">
-               <img src="assets/img/logo.png" alt="Logo">
+               <a href="{% url 'index' %}" class="logo">
+               <img src="{% static 'assets/img/logo.png' %}" alt="Logo">
                </a>
-               <a href="index.html" class="logo logo-small">
-               <img src="assets/img/logo-small.png" alt="Logo" width="30" height="30">
+               <a href="{% url 'index' %}" class="logo logo-small">
+               <img src="{% static 'assets/img/logo-small.png' %}" alt="Logo" width="30" height="30">
                </a>
             </div>
             <a href="javascript:void(0);" id="toggle_btn">

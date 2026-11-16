@@ -24,7 +24,7 @@
 <div class="about-info">
 <h4>About Me</h4>
 <div class="media mt-3">
-<img src="{{student.student_image.url}}" class="mr-3" alt="...">
+<img src="{% if student.student_image %}{{ student.student_image.url }}{% else %}{% static 'assets/img/user.jpg' %}{% endif %}" class="mr-3" alt="...">
 <div class="media-body">
 <ul>
 <li>

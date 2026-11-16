@@ -1,9 +1,12 @@
-from django.http import HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404,redirect
-from .models import *
 from django.contrib import messages
-# Create your views here.
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 
+from school.utils import create_notification
+from .models import Parent, Student
+
+@login_required
 def add_student(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
@@ -63,27 +66,25 @@ def add_student(request):
         )
         create_notification(request.user, f"Added Student: {student.first_name} {student.last_name}")
         messages.success(request, "Student added Successfully")
-        # return render(request, "student_list")
-
-  
+        return redirect("student_list")
 
     return render(request,"students/add-student.html")
 
 
 
+@login_required
 def student_list(request):
     student_list = Student.objects.select_related('parent').all()
-    unread_notification = request.user.notification_set.filter(is_read=False)
     context = {
         'student_list': student_list,
-        'unread_notification': unread_notification
     }
     return render(request, "students/students.html", context)
 
 
+@login_required
 def edit_student(request,slug):
     student = get_object_or_404(Student, slug=slug)
-    parent = student.parent if hasattr(student, 'parent') else None
+    parent = student.parent
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -126,20 +127,22 @@ def edit_student(request,slug):
         student.section = section
         student.student_image = student_image
         student.save()
-        create_notification(request.user, f"Added Student: {student.first_name} {student.last_name}")
+        create_notification(request.user, f"Updated Student: {student.first_name} {student.last_name}")
         
         return redirect("student_list")
     return render(request, "students/edit-student.html",{'student':student, 'parent':parent} )
 
 
+@login_required
 def view_student(request, slug):
-    student = get_object_or_404(Student, student_id = slug)
+    student = get_object_or_404(Student, slug=slug)
     context = {
         'student': student
     }
     return render(request, "students/student-details.html", context)
 
 
+@login_required
 def delete_student(request,slug):
     if request.method == "POST":
         student = get_object_or_404(Student, slug=slug)

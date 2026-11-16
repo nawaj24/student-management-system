@@ -38,10 +38,14 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
+def generate_token():
+    return get_random_string(32)
+
+
 class PasswordResetRequest(models.Model):
     user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
     email = models.EmailField()
-    token = models.CharField(max_length=32, default=get_random_string(32), editable=False, unique=True)
+    token = models.CharField(max_length=32, default=generate_token, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Define token validity period (e.g., 1 hour)
@@ -51,7 +55,7 @@ class PasswordResetRequest(models.Model):
         return timezone.now() <= self.created_at + self.TOKEN_VALIDITY_PERIOD
 
     def send_reset_email(self):
-        reset_link = f"http://localhost:8000/authentication/reset-password/{self.token}/"
+        reset_link = f"{settings.SITE_URL}/authentication/reset-password/{self.token}/"
         send_mail(
             'Password Reset Request',
             f'Click the following link to reset your password: {reset_link}',

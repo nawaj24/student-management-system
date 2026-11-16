@@ -52,7 +52,7 @@ Follow the steps below to get the project up and running on your local machine:
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/student-management-system.git
+git clone https://github.com/nawaj24/student-management-system.git
 cd student-management-system
 ```
 
@@ -67,18 +67,22 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### **4. Set Up Database**
-Make sure to set up your database (e.g., PostgreSQL) and update the `DATABASES` configuration in `student_management/settings.py`.
+### **4. Create Your `.env` File**
+Copy `.env.example` to `.env` and put your own `SECRET_KEY` in it:
+```bash
+cp .env.example .env   # On Windows: copy .env.example .env
+```
 
 ### **5. Run Migrations**
 ```bash
 python manage.py migrate
 ```
 
-### **6. Create Superuser**
+### **6. Create Superuser (Admin login)**
 ```bash
 python manage.py createsuperuser
 ```
+Log in with the superuser's email and password to open the Admin Dashboard. Students and teachers can register from the signup page by choosing their role.
 
 ### **7. Run the Application**
 ```bash
@@ -108,6 +112,9 @@ This will build the Docker image and run the Django application and the PostgreS
 ## **Video Links**
 Watch the videos to learn in proper way.
 https://youtu.be/mM6vMMLYJHY
+
+## **Template Files**
+All HTML templates and static files (CSS, JS, images) used in the videos are included in this repository, in the `templates/` and `static/` folders. No separate download is needed.
 
 
 ## **Testing**

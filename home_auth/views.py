@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.crypto import get_random_string
+from school.views import get_dashboard_url
 
 
 def signup_view(request):
@@ -14,8 +15,21 @@ def signup_view(request):
         last_name = request.POST['last_name']
         email = request.POST['email']
         password = request.POST['password']
-        role = request.POST.get('role')  # Get role from the form (student, teacher, or admin)
-        
+        confirm_password = request.POST.get('confirm_password')
+        role = request.POST.get('role')  # student or teacher (admin is created with createsuperuser)
+
+        if password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'authentication/register.html')
+
+        if role not in ('student', 'teacher'):
+            messages.error(request, 'Please select a valid role.')
+            return render(request, 'authentication/register.html')
+
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, 'An account with this email already exists.')
+            return render(request, 'authentication/register.html')
+
         # Create the user
         user = CustomUser.objects.create_user(
             username=email,
@@ -24,20 +38,18 @@ def signup_view(request):
             last_name=last_name,
             password=password,
         )
-        
-        # Assign the appropriate role
+
+        # Assign the selected role
         if role == 'student':
             user.is_student = True
         elif role == 'teacher':
             user.is_teacher = True
-        elif role == 'admin':
-            user.is_admin = True
+        user.save()
 
-        user.save()  # Save the user with the assigned role
         login(request, user)
         messages.success(request, 'Signup successful!')
-        return redirect('index')  # Redirect to the index or home page
-    return render(request, 'authentication/register.html')  # Render signup template
+        return redirect(get_dashboard_url(user))
+    return render(request, 'authentication/register.html')
 
 
 def login_view(request):
@@ -50,17 +62,14 @@ def login_view(request):
             login(request, user)
             messages.success(request, 'Login successful!')
             
-            # Redirect user based on their role
-            if user.is_admin:
-                return redirect('admin_dashboard')
-            elif user.is_teacher:
-                return redirect('teacher_dashboard')
-            elif user.is_student:
-                return redirect('dashboard')
-            else:
-                messages.error(request, 'Invalid user role')
-                return redirect('index')  # Redirect to index in case of error
-            
+            # Redirect user based on their role (superuser counts as admin)
+            dashboard_url = get_dashboard_url(user)
+            if dashboard_url:
+                return redirect(dashboard_url)
+            logout(request)
+            messages.error(request, 'Invalid user role')
+            return redirect('login')
+
         else:
             messages.error(request, 'Invalid credentials')
     return render(request, 'authentication/login.html')  # Render login template
@@ -72,8 +81,7 @@ def forgot_password_view(request):
         user = CustomUser.objects.filter(email=email).first()
         
         if user:
-            token = get_random_string(32)
-            reset_request = PasswordResetRequest.objects.create(user=user, email=email, token=token)
+            reset_request = PasswordResetRequest.objects.create(user=user, email=email)
             reset_request.send_reset_email()
             messages.success(request, 'Reset link sent to your email.')
         else:
@@ -87,12 +95,13 @@ def reset_password_view(request, token):
     
     if not reset_request or not reset_request.is_valid():
         messages.error(request, 'Invalid or expired reset link')
-        return redirect('index')
+        return redirect('forgot-password')
 
     if request.method == 'POST':
         new_password = request.POST['new_password']
         reset_request.user.set_password(new_password)
         reset_request.user.save()
+        reset_request.delete()  # a reset link works only once
         messages.success(request, 'Password reset successful')
         return redirect('login')
 
@@ -102,4 +111,4 @@ def reset_password_view(request, token):
 def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out.')
-    return redirect('index')
+    return redirect('login')

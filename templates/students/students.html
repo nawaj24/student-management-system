@@ -43,8 +43,8 @@
                                        <td>{{ student.student_id}}</td>
                                        <td>
                                           <h2 class="table-avatar">
-                                             <a href="{% url 'view_student' student.student_id %}" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{ student.student_image.url }}" alt="User Image"></a>
-                                             <a href="{% url 'view_student' student.student_id %}">{{ student.first_name }} {{ student.last_name}}</a>
+                                             <a href="{% url 'view_student' student.slug %}" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{% if student.student_image %}{{ student.student_image.url }}{% else %}{% static 'assets/img/user.jpg' %}{% endif %}" alt="User Image"></a>
+                                             <a href="{% url 'view_student' student.slug %}">{{ student.first_name }} {{ student.last_name}}</a>
                                           </h2>
                                        </td>
                                        <td>{{ student.student_class }}</td>

@@ -11,7 +11,7 @@ WORKDIR /app
 # Install dependencies
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
-RUN pip install gunicorn  # Ensure gunicorn is installed
+
 # Copy project
 COPY . /app/
 
