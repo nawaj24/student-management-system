@@ -3,6 +3,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 
 from home_auth.decorators import role_required
+from .dashboard import get_dashboard_stats
 
 from .models import Notification
 
@@ -32,14 +33,12 @@ def dashboard(request):
 
 @role_required('admin')
 def admin_dashboard(request):
-    # Full admin dashboard is built in Episode 2
-    return render(request, "Home/index.html")
+    return render(request, "Home/index.html", get_dashboard_stats())
 
 
 @role_required('teacher')
 def teacher_dashboard(request):
-    # Full teacher dashboard is built in Episode 2
-    return render(request, "Home/index.html")
+    return render(request, "Home/index.html", get_dashboard_stats())
 
 
 @login_required
