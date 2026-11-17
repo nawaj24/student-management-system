@@ -159,3 +159,44 @@ class RoleAccessTests(TestCase):
         response = self.client.get(reverse('admin_dashboard'))
         self.assertEqual(response.status_code, 403)
         self.assertIn('Go to my dashboard', response.content.decode())
+
+
+class DashboardStatsTests(TestCase):
+    """Dashboards show real numbers from the database (Episode 2)."""
+
+    def setUp(self):
+        from django.core.management import call_command
+        from io import StringIO
+        call_command('seed_students', count=30, stdout=StringIO())
+        make_user('teacher1@school.com', is_teacher=True)
+        make_user('teacher2@school.com', is_teacher=True)
+
+    def test_stats_match_database(self):
+        from school.dashboard import get_dashboard_stats
+        stats = get_dashboard_stats()
+        self.assertEqual(stats['total_students'], 30)
+        self.assertEqual(stats['total_teachers'], 2)
+        self.assertEqual(sum(stats['chart_data']['class_counts']), 30)
+        self.assertEqual(sum(stats['chart_data']['gender_counts']), 30)
+        self.assertEqual(len(stats['recent_students']), 5)
+
+    def test_classes_sorted_as_numbers(self):
+        from school.dashboard import get_dashboard_stats
+        labels = get_dashboard_stats()['chart_data']['class_labels']
+        numbers = [int(label.split()[-1]) for label in labels]
+        self.assertEqual(numbers, sorted(numbers))
+
+    def test_admin_dashboard_shows_real_numbers(self):
+        admin = CustomUser.objects.create_superuser(username='boss@school.com', email='boss@school.com', password='StrongPass123')
+        self.client.force_login(admin)
+        page = self.client.get(reverse('admin_dashboard')).content.decode()
+        self.assertIn('<h3>30</h3>', page)
+        self.assertIn('id="chart-data"', page)
+        self.assertNotIn('50055', page)  # old fake number is gone
+
+    def test_teacher_dashboard_has_no_add_button(self):
+        teacher = CustomUser.objects.get(email='teacher1@school.com')
+        self.client.force_login(teacher)
+        page = self.client.get(reverse('teacher_dashboard')).content.decode()
+        self.assertIn('Students by Class', page)
+        self.assertNotIn('Add Student</a>', page)
