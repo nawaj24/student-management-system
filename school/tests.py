@@ -88,6 +88,74 @@ class StudentAndNotificationTests(TestCase):
         self.client.post(reverse('clear_all_notifications'))
         self.assertEqual(Notification.objects.count(), 0)
 
-    def test_all_dashboards_render(self):
-        for name in ('admin_dashboard', 'teacher_dashboard', 'dashboard'):
-            self.assertEqual(self.client.get(reverse(name)).status_code, 200, name)
+    def test_admin_dashboard_renders(self):
+        self.assertEqual(self.client.get(reverse('admin_dashboard')).status_code, 200)
+
+
+def make_user(email, **roles):
+    user = CustomUser.objects.create_user(username=email, email=email, password='StrongPass123')
+    for role, value in roles.items():
+        setattr(user, role, value)
+    user.save()
+    return user
+
+
+class RoleAccessTests(TestCase):
+    """Each role can open only its own pages (Episode 1)."""
+
+    def setUp(self):
+        self.admin = CustomUser.objects.create_superuser(username='admin@school.com', email='admin@school.com', password='StrongPass123')
+        self.teacher = make_user('teacher@school.com', is_teacher=True)
+        self.student = make_user('student@school.com', is_student=True)
+
+    def status(self, user, name, *args):
+        self.client.force_login(user)
+        return self.client.get(reverse(name, args=args)).status_code
+
+    def test_role_property(self):
+        self.assertEqual(self.admin.role, 'admin')
+        self.assertEqual(self.teacher.role, 'teacher')
+        self.assertEqual(self.student.role, 'student')
+
+    def test_each_role_opens_only_its_dashboard(self):
+        expected = {
+            self.admin: {'admin_dashboard': 200, 'teacher_dashboard': 403, 'dashboard': 403},
+            self.teacher: {'admin_dashboard': 403, 'teacher_dashboard': 200, 'dashboard': 403},
+            self.student: {'admin_dashboard': 403, 'teacher_dashboard': 403, 'dashboard': 200},
+        }
+        for user, pages in expected.items():
+            for name, code in pages.items():
+                self.assertEqual(self.status(user, name), code, f'{user.role} -> {name}')
+
+    def test_student_pages_by_role(self):
+        self.client.force_login(self.admin)
+        self.client.post(reverse('add_student'), STUDENT_FORM)
+        slug = Student.objects.get().slug
+        # admin: everything
+        for name, args in [('student_list', ()), ('add_student', ()), ('view_student', (slug,)), ('edit_student', (slug,))]:
+            self.assertEqual(self.status(self.admin, name, *args), 200, name)
+        # teacher: can view, cannot change
+        self.assertEqual(self.status(self.teacher, 'student_list'), 200)
+        self.assertEqual(self.status(self.teacher, 'view_student', slug), 200)
+        self.assertEqual(self.status(self.teacher, 'add_student'), 403)
+        self.assertEqual(self.status(self.teacher, 'edit_student', slug), 403)
+        self.client.force_login(self.teacher)
+        self.assertEqual(self.client.post(reverse('delete_student', args=[slug])).status_code, 403)
+        self.assertTrue(Student.objects.exists())
+        # student: no student management
+        self.assertEqual(self.status(self.student, 'student_list'), 403)
+
+    def test_sidebar_shows_only_allowed_links(self):
+        self.client.force_login(self.teacher)
+        page = self.client.get(reverse('student_list')).content.decode()
+        self.assertIn('Student List', page)
+        self.assertNotIn('Student Add', page)
+        self.client.force_login(self.admin)
+        page = self.client.get(reverse('student_list')).content.decode()
+        self.assertIn('Student Add', page)
+
+    def test_403_page_has_dashboard_link(self):
+        self.client.force_login(self.student)
+        response = self.client.get(reverse('admin_dashboard'))
+        self.assertEqual(response.status_code, 403)
+        self.assertIn('Go to my dashboard', response.content.decode())

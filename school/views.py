@@ -2,18 +2,21 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 
+from home_auth.decorators import role_required
+
 from .models import Notification
+
+
+DASHBOARDS = {
+    'admin': 'admin_dashboard',
+    'teacher': 'teacher_dashboard',
+    'student': 'dashboard',
+}
 
 
 def get_dashboard_url(user):
     """Return the dashboard URL name for the user's role."""
-    if user.is_superuser or user.is_admin:
-        return 'admin_dashboard'
-    if user.is_teacher:
-        return 'teacher_dashboard'
-    if user.is_student:
-        return 'dashboard'
-    return None
+    return DASHBOARDS.get(user.role)
 
 
 def index(request):
@@ -22,18 +25,18 @@ def index(request):
     return redirect('login')
 
 
-@login_required
+@role_required('student')
 def dashboard(request):
     return render(request, "students/student-dashboard.html")
 
 
-@login_required
+@role_required('admin')
 def admin_dashboard(request):
     # Full admin dashboard is built in Episode 2
     return render(request, "Home/index.html")
 
 
-@login_required
+@role_required('teacher')
 def teacher_dashboard(request):
     # Full teacher dashboard is built in Episode 2
     return render(request, "Home/index.html")

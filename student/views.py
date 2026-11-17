@@ -1,12 +1,12 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 
+from home_auth.decorators import role_required
 from school.utils import create_notification
 from .models import Parent, Student
 
-@login_required
+@role_required('admin')
 def add_student(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
@@ -72,7 +72,7 @@ def add_student(request):
 
 
 
-@login_required
+@role_required('admin', 'teacher')
 def student_list(request):
     student_list = Student.objects.select_related('parent').all()
     context = {
@@ -81,7 +81,7 @@ def student_list(request):
     return render(request, "students/students.html", context)
 
 
-@login_required
+@role_required('admin')
 def edit_student(request,slug):
     student = get_object_or_404(Student, slug=slug)
     parent = student.parent
@@ -133,7 +133,7 @@ def edit_student(request,slug):
     return render(request, "students/edit-student.html",{'student':student, 'parent':parent} )
 
 
-@login_required
+@role_required('admin', 'teacher')
 def view_student(request, slug):
     student = get_object_or_404(Student, slug=slug)
     context = {
@@ -142,7 +142,7 @@ def view_student(request, slug):
     return render(request, "students/student-details.html", context)
 
 
-@login_required
+@role_required('admin')
 def delete_student(request,slug):
     if request.method == "POST":
         student = get_object_or_404(Student, slug=slug)
