@@ -15,7 +15,9 @@
                      </div>
                      <div class="col-auto text-right float-right ml-auto">
                         <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
+                        {% if user.role == 'admin' %}
                         <a href="{% url 'add_student' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                        {% endif %}
                      </div>
                   </div>
                </div>
@@ -57,6 +59,7 @@
                                        <td>{{ student.mobile_number }}</td>
                                        <td>{{ student.parent.present_address }}</td>
                                        <td class="text-right">
+                                          {% if user.role == 'admin' %}
                                           <div class="actions">
                                              <a href="{% url 'edit_student' student.slug %}" class="btn btn-sm bg-success-light mr-2">
                                                  <i class="fas fa-pen"></i>
@@ -68,6 +71,7 @@
                                                  </button>
                                              </form>
                                          </div>
+                                          {% endif %}
                                        </td>
                                     </tr>
                                     {% endfor %}

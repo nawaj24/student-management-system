@@ -23,6 +23,17 @@ class CustomUser(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False) 
 
+    @property
+    def role(self):
+        """Return 'admin', 'teacher', 'student' or None (superuser counts as admin)."""
+        if self.is_superuser or self.is_admin:
+            return 'admin'
+        if self.is_teacher:
+            return 'teacher'
+        if self.is_student:
+            return 'student'
+        return None
+
     # Set related_name to None to prevent reverse relationship creation
     groups = models.ManyToManyField(
         'auth.Group',
