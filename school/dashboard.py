@@ -18,14 +18,20 @@ def get_dashboard_stats():
     by_class = students.values('student_class').annotate(total=Count('id'))
     by_class = sorted(by_class, key=lambda row: class_sort_key(row['student_class']))
 
-    by_gender = students.values('gender').annotate(total=Count('id')).order_by('-gender')  # Male first
+    by_gender = students.values('gender').annotate(total=Count('id'))
+    by_gender = by_gender.order_by('-gender')  # Male first
     gender_names = {'Male': 'Boys', 'Female': 'Girls', 'Others': 'Others'}
+
+    new_this_month = students.filter(
+        joining_date__year=today.year,
+        joining_date__month=today.month,
+    )
 
     return {
         'total_students': students.count(),
         'total_teachers': CustomUser.objects.filter(is_teacher=True).count(),
         'total_classes': len(by_class),
-        'new_this_month': students.filter(joining_date__year=today.year, joining_date__month=today.month).count(),
+        'new_this_month': new_this_month.count(),
         'chart_data': {
             'class_labels': [f"Class {row['student_class']}" for row in by_class],
             'class_counts': [row['total'] for row in by_class],

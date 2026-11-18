@@ -13,7 +13,9 @@
             </div>
             {% if user.role == 'admin' %}
             <div class="col-auto">
-               <a href="{% url 'add_student' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Student</a>
+               <a href="{% url 'add_student' %}" class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Add Student
+               </a>
             </div>
             {% endif %}
          </div>
@@ -123,13 +125,19 @@
                            {% for student in recent_students %}
                            <tr>
                               <td>{{ student.student_id }}</td>
-                              <td><a href="{% url 'view_student' student.slug %}">{{ student.first_name }} {{ student.last_name }}</a></td>
+                              <td>
+                                 <a href="{% url 'view_student' student.slug %}">
+                                    {{ student.first_name }} {{ student.last_name }}
+                                 </a>
+                              </td>
                               <td>{{ student.student_class }}</td>
                               <td>{{ student.section }}</td>
                               <td>{{ student.joining_date|date:"d M Y" }}</td>
                            </tr>
                            {% empty %}
-                           <tr><td colspan="5" class="text-center text-muted">No students yet.</td></tr>
+                           <tr>
+                              <td colspan="5" class="text-center text-muted">No students yet.</td>
+                           </tr>
                            {% endfor %}
                         </tbody>
                      </table>
