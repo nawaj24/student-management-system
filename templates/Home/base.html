@@ -120,6 +120,18 @@
                      </li>
                      {% endif %}
 
+                     {% if user.role == 'admin' or user.role == 'teacher' %}
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Teachers</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'teacher_list' %}">Teacher List</a></li>
+                           {% if user.role == 'admin' %}
+                           <li><a href="{% url 'add_teacher' %}">Teacher Add</a></li>
+                           {% endif %}
+                        </ul>
+                     </li>
+                     {% endif %}
+
                      <li class="menu-title">
                         <span>Account</span>
                      </li>

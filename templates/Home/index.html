@@ -21,6 +21,10 @@
          </div>
       </div>
 
+      {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
       <!-- Stat cards: real numbers from the database -->
       <div class="row">
          <div class="col-xl-3 col-sm-6 col-12 d-flex">
