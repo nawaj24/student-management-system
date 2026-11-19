@@ -53,7 +53,7 @@
                                              <a href="{% url 'view_student' student.slug %}">{{ student.first_name }} {{ student.last_name}}</a>
                                           </h2>
                                        </td>
-                                       <td>{{ student.student_class }}</td>
+                                       <td>{{ student.section|default:"—" }}</td>
                                        <td>{{ student.date_of_birth|date:"d M Y" }}</td>
                                        <td>{{ student.parent.father_name }} / {{ student.parent.mother_name }}</td>
                                        <td>{{ student.mobile_number }}</td>

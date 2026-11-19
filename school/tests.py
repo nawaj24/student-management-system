@@ -8,9 +8,9 @@ from student.models import Student
 
 STUDENT_FORM = {
     'first_name': 'Ram', 'last_name': 'Sharma', 'student_id': 'S001', 'gender': 'Male',
-    'date_of_birth': '2010-05-01', 'student_class': '10', 'religion': 'Hindu',
+    'date_of_birth': '2010-05-01', 'religion': 'Hindu',
     'joining_date': '2024-04-01', 'mobile_number': '9800000000', 'admission_number': 'A001',
-    'section': 'A', 'father_name': 'Hari', 'father_occupation': 'Farmer',
+    'father_name': 'Hari', 'father_occupation': 'Farmer',
     'father_mobile': '9800000001', 'father_email': 'hari@example.com', 'mother_name': 'Sita',
     'mother_occupation': 'Teacher', 'mother_mobile': '9800000002',
     'mother_email': 'sita@example.com', 'present_address': 'Janakpur',
@@ -167,6 +167,7 @@ class DashboardStatsTests(TestCase):
     def setUp(self):
         from django.core.management import call_command
         from io import StringIO
+        call_command('seed_classes', stdout=StringIO())  # Episode 5
         call_command('seed_students', count=30, stdout=StringIO())
         call_command('seed_teachers', stdout=StringIO())  # 8 Teacher records (Episode 3)
         make_user('teacher1@school.com', is_teacher=True)

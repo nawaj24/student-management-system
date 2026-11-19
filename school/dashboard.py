@@ -1,13 +1,9 @@
 from django.db.models import Count
 from django.utils import timezone
 
+from classroom.models import SchoolClass
 from student.models import Student
 from teacher.models import Teacher
-
-
-def class_sort_key(name):
-    """Sort classes as 1, 2, ... 10 (not '1', '10', '2')."""
-    return (0, int(name), '') if name.isdigit() else (1, 0, name)
 
 
 def get_dashboard_stats():
@@ -15,12 +11,16 @@ def get_dashboard_stats():
     students = Student.objects.all()
     today = timezone.localdate()
 
-    by_class = students.values('student_class').annotate(total=Count('id'))
-    by_class = sorted(by_class, key=lambda row: class_sort_key(row['student_class']))
+    # order = 1, 2 ... 10, so 'Class 10' comes last (not after 'Class 1')
+    classes = SchoolClass.objects.annotate(
+        total=Count('sections__students')
+    ).order_by('order')
 
     by_gender = students.values('gender').annotate(total=Count('id'))
     by_gender = by_gender.order_by('-gender')  # Male first
     gender_names = {'Male': 'Boys', 'Female': 'Girls', 'Others': 'Others'}
+
+    recent = students.select_related('section__school_class')
 
     new_this_month = students.filter(
         joining_date__year=today.year,
@@ -30,13 +30,13 @@ def get_dashboard_stats():
     return {
         'total_students': students.count(),
         'total_teachers': Teacher.objects.count(),
-        'total_classes': len(by_class),
+        'total_classes': classes.count(),
         'new_this_month': new_this_month.count(),
         'chart_data': {
-            'class_labels': [f"Class {row['student_class']}" for row in by_class],
-            'class_counts': [row['total'] for row in by_class],
+            'class_labels': [school_class.name for school_class in classes],
+            'class_counts': [school_class.total for school_class in classes],
             'gender_labels': [gender_names[row['gender']] for row in by_gender],
             'gender_counts': [row['total'] for row in by_gender],
         },
-        'recent_students': students.order_by('-joining_date', '-id')[:5],
+        'recent_students': recent.order_by('-joining_date', '-id')[:5],
     }

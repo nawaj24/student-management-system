@@ -1,0 +1,65 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">{{ section }}</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'class_list' %}">Classes</a></li>
+                  <li class="breadcrumb-item active">Section {{ section.name }}</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="col-auto">
+               <a href="{% url 'edit_section' section.pk %}" class="btn btn-primary">
+                  <i class="fas fa-pen"></i> Edit
+               </a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
+      <div class="card">
+         <div class="card-body">
+            <p><strong>Class Teacher:</strong> {{ section.class_teacher.full_name|default:"Not assigned" }}</p>
+            <p class="mb-0"><strong>Room:</strong> {{ section.room|default:"—" }}</p>
+         </div>
+      </div>
+
+      <div class="card">
+         <div class="card-header">
+            <h5 class="card-title mb-0">Students ({{ students|length }})</h5>
+         </div>
+         <div class="card-body">
+            <table class="table table-hover mb-0">
+               <thead class="thead-light">
+                  <tr><th>ID</th><th>Name</th><th>Gender</th><th>Joined</th></tr>
+               </thead>
+               <tbody>
+                  {% for student in students %}
+                  <tr>
+                     <td>{{ student.student_id }}</td>
+                     <td>
+                        <a href="{% url 'view_student' student.slug %}">
+                           {{ student.first_name }} {{ student.last_name }}
+                        </a>
+                     </td>
+                     <td>{{ student.gender }}</td>
+                     <td>{{ student.joining_date|date:"d M Y" }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="4" class="text-center text-muted">No students in this section.</td></tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
