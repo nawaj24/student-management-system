@@ -1,0 +1,66 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">{{ department.name }}</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'department_list' %}">Departments</a></li>
+                  <li class="breadcrumb-item active">{{ department.code }}</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="col-auto">
+               <a href="{% url 'edit_department' department.slug %}" class="btn btn-primary">
+                  <i class="fas fa-pen"></i> Edit
+               </a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      <div class="card">
+         <div class="card-body">
+            <p><strong>Head of Department:</strong>
+               {% if department.head %}
+               <a href="{% url 'teacher_detail' department.head.slug %}">{{ department.head.full_name }}</a>
+               {% else %}
+               Not assigned
+               {% endif %}
+            </p>
+            <p class="text-muted mb-0">{{ department.description|default:"No description." }}</p>
+         </div>
+      </div>
+
+      <div class="card">
+         <div class="card-header"><h5 class="card-title mb-0">Subjects</h5></div>
+         <div class="card-body">
+            <table class="table mb-0">
+               <thead class="thead-light">
+                  <tr><th>Code</th><th>Subject</th><th>Teachers</th></tr>
+               </thead>
+               <tbody>
+                  {% for subject in subjects %}
+                  <tr>
+                     <td>{{ subject.code }}</td>
+                     <td>{{ subject.name }}</td>
+                     <td>
+                        {% for teacher in subject.teachers.all %}
+                        <span class="badge badge-info">{{ teacher.full_name }}</span>
+                        {% empty %}
+                        <span class="text-muted">No teacher yet</span>
+                        {% endfor %}
+                     </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="3" class="text-center text-muted">No subjects in this department.</td></tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
