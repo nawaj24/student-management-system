@@ -161,6 +161,13 @@
                            {% endif %}
                         </ul>
                      </li>
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-calendar-check"></i> <span> Attendance</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'mark_attendance' %}">Mark Attendance</a></li>
+                           <li><a href="{% url 'attendance_report' %}">Monthly Report</a></li>
+                        </ul>
+                     </li>
                      {% endif %}
 
                      <li class="menu-title">

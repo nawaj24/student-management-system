@@ -1,6 +1,7 @@
 from django.db.models import Count
 from django.utils import timezone
 
+from attendance.models import Attendance
 from classroom.models import SchoolClass
 from student.models import Student
 from teacher.models import Teacher
@@ -22,6 +23,9 @@ def get_dashboard_stats():
 
     recent = students.select_related('section__school_class')
 
+    marked_today = Attendance.objects.filter(date=today)
+    present_today = marked_today.exclude(status=Attendance.Status.ABSENT).count()
+
     new_this_month = students.filter(
         joining_date__year=today.year,
         joining_date__month=today.month,
@@ -38,5 +42,8 @@ def get_dashboard_stats():
             'gender_labels': [gender_names[row['gender']] for row in by_gender],
             'gender_counts': [row['total'] for row in by_gender],
         },
+        'attendance_today': (
+            round(present_today * 100 / marked_today.count()) if marked_today.exists() else None
+        ),
         'recent_students': recent.order_by('-joining_date', '-id')[:5],
     }

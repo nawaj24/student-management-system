@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'teacher',
     'academics',
     'classroom',
+    'attendance',
     'home_auth',
 ]
 

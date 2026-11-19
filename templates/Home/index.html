@@ -10,6 +10,9 @@
                <ul class="breadcrumb">
                   <li class="breadcrumb-item active">{{ user.role|title }} Dashboard</li>
                </ul>
+               {% if attendance_today is not None %}
+               <span class="badge badge-success mt-2">Today's attendance: {{ attendance_today }}%</span>
+               {% endif %}
             </div>
             {% if user.role == 'admin' %}
             <div class="col-auto">
