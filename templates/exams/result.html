@@ -1,0 +1,50 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <h3 class="page-title">Result · {{ exam }}</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'exam_list' %}">Exams</a></li>
+            <li class="breadcrumb-item active">Result</li>
+         </ul>
+      </div>
+
+      <div class="card">
+         <div class="card-body table-responsive">
+            <table class="table table-hover mb-0">
+               <thead class="thead-light">
+                  <tr>
+                     <th>Rank</th>
+                     <th>Student</th>
+                     {% for subject in subjects %}<th>{{ subject.name }}</th>{% endfor %}
+                     <th>Total</th><th>%</th><th>Grade</th><th>Result</th><th></th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for row in rows %}
+                  <tr>
+                     <td><b>{{ row.rank }}</b></td>
+                     <td>{{ row.student.first_name }} {{ row.student.last_name }}</td>
+                     {% for marks, failed in row.cells %}
+                     <td {% if failed %}class="text-danger font-weight-bold"{% endif %}>{{ marks|default_if_none:"—" }}</td>
+                     {% endfor %}
+                     <td>{{ row.total }}</td>
+                     <td>{{ row.percent }}</td>
+                     <td>{{ row.grade }}</td>
+                     <td>
+                        {% if row.passed %}<span class="badge badge-success">Pass</span>
+                        {% else %}<span class="badge badge-danger">Fail</span>{% endif %}
+                     </td>
+                     <td><a href="{% url 'report_card' exam.pk row.student.pk %}">Report card</a></td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="8" class="text-center text-muted">No marks entered yet.</td></tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

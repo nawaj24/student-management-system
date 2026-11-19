@@ -168,6 +168,15 @@
                            <li><a href="{% url 'attendance_report' %}">Monthly Report</a></li>
                         </ul>
                      </li>
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-clipboard-list"></i> <span> Exams</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'exam_list' %}">Exam List</a></li>
+                           {% if user.role == 'admin' %}
+                           <li><a href="{% url 'add_exam' %}">Exam Add</a></li>
+                           {% endif %}
+                        </ul>
+                     </li>
                      {% endif %}
 
                      <li class="menu-title">

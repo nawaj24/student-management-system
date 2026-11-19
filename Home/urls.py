@@ -11,6 +11,7 @@ urlpatterns = [
     path('academics/', include('academics.urls')),
     path('classes/', include('classroom.urls')),
     path('attendance/', include('attendance.urls')),
+    path('exams/', include('exams.urls')),
     path('authentication/', include("home_auth.urls")),
 ]
 
