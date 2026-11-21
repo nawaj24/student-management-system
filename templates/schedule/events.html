@@ -1,0 +1,68 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Holidays &amp; Events</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item active">School calendar</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="col-auto">
+               <a href="{% url 'add_event' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add</a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
+      <div class="card">
+         <div class="card-header"><h5 class="card-title mb-0">Coming up</h5></div>
+         <div class="card-body">
+            <ul class="list-group list-group-flush">
+               {% for event in upcoming %}
+               <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                     <b>{{ event.title }}</b>
+                     {% if event.kind == 'holiday' %}<span class="badge badge-success ml-2">Holiday</span>
+                     {% elif event.kind == 'exam' %}<span class="badge badge-warning ml-2">Exam</span>
+                     {% else %}<span class="badge badge-info ml-2">Event</span>{% endif %}
+                     {% if event.description %}<br><small class="text-muted">{{ event.description }}</small>{% endif %}
+                  </div>
+                  <span>
+                     {{ event.start_date|date:"d M Y" }}
+                     {% if event.end_date %} – {{ event.end_date|date:"d M Y" }}{% endif %}
+                     {% if event.start_date <= today %}<span class="badge badge-primary ml-2">Today</span>
+                     {% else %}<small class="text-muted ml-2">in {{ event.start_date|timeuntil:today }}</small>{% endif %}
+                  </span>
+               </li>
+               {% empty %}
+               <li class="list-group-item text-muted">Nothing planned yet.</li>
+               {% endfor %}
+            </ul>
+         </div>
+      </div>
+
+      <div class="card">
+         <div class="card-header"><h5 class="card-title mb-0">Recently finished</h5></div>
+         <div class="card-body">
+            <ul class="list-group list-group-flush">
+               {% for event in past %}
+               <li class="list-group-item text-muted d-flex justify-content-between">
+                  <span>{{ event.title }}</span><span>{{ event.start_date|date:"d M Y" }}</span>
+               </li>
+               {% empty %}
+               <li class="list-group-item text-muted">Nothing yet.</li>
+               {% endfor %}
+            </ul>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
