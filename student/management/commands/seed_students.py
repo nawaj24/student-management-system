@@ -4,12 +4,12 @@ from datetime import date, timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from classroom.models import Section
 from student.models import Parent, Student
 
 BOYS = ['Aarav', 'Rohan', 'Sagar', 'Bibek', 'Nabin', 'Suraj', 'Kiran', 'Anish']
 GIRLS = ['Sita', 'Anjali', 'Priya', 'Puja', 'Sunita', 'Nisha', 'Kritika', 'Rekha']
 SURNAMES = ['Yadav', 'Sah', 'Jha', 'Mandal', 'Thakur', 'Mishra', 'Karna', 'Gupta']
-CLASSES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 
 def random_mobile(rng):
@@ -26,6 +26,10 @@ class Command(BaseCommand):
         rng = random.Random(42)  # same data every time
         today = timezone.localdate()
         start = Student.objects.count()
+        sections = list(Section.objects.all())
+        if not sections:
+            self.stderr.write('No sections yet. Run: python manage.py seed_classes')
+            return
 
         for n in range(start + 1, start + options['count'] + 1):
             gender = rng.choice(['Male', 'Female'])
@@ -49,12 +53,11 @@ class Command(BaseCommand):
                 student_id=f'S{n:04d}',
                 gender=gender,
                 date_of_birth=date(rng.randint(2008, 2018), rng.randint(1, 12), rng.randint(1, 28)),
-                student_class=rng.choice(CLASSES),
                 religion=rng.choice(['Hindu', 'Muslim', 'Buddhist', 'Christian']),
                 joining_date=today - timedelta(days=rng.randint(0, 400)),
                 mobile_number=random_mobile(rng),
                 admission_number=f'A{n:04d}',
-                section=rng.choice(['A', 'B']),
+                section=rng.choice(sections),
                 parent=parent,
             )
 

@@ -64,8 +64,13 @@
                                  </div>
                                  <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                       <label>Class</label>
-                                       <input type="text" class="form-control" name="student_class" required>
+                                       <label>Class &amp; Section</label>
+                                       <select class="form-control" name="section" required>
+                                          <option value="">Select class and section</option>
+                                          {% for section in sections %}
+                                          <option value="{{ section.pk }}">{{ section }}</option>
+                                          {% endfor %}
+                                       </select>
                                     </div>
                                  </div>
                                  <div class="col-12 col-sm-6">
@@ -92,12 +97,6 @@
                                     <div class="form-group">
                                        <label>Admission Number</label>
                                        <input type="text" class="form-control" name="admission_number" required>
-                                    </div>
-                                 </div>
-                                 <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                       <label>Section</label>
-                                       <input type="text" class="form-control" name="section" required>
                                     </div>
                                  </div>
                                  <div class="col-12 col-sm-6">

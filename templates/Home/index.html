@@ -134,8 +134,8 @@
                                     {{ student.first_name }} {{ student.last_name }}
                                  </a>
                               </td>
-                              <td>{{ student.student_class }}</td>
-                              <td>{{ student.section }}</td>
+                              <td>{{ student.section.school_class.name }}</td>
+                              <td>{{ student.section.name }}</td>
                               <td>{{ student.joining_date|date:"d M Y" }}</td>
                            </tr>
                            {% empty %}

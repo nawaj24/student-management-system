@@ -1,0 +1,65 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Classes</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item active">Classes &amp; Sections</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="col-auto">
+               <a href="{% url 'add_class' %}" class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Add Class
+               </a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
+      <div class="row">
+         {% for school_class in classes %}
+         <div class="col-12 col-lg-6">
+            <div class="card">
+               <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title mb-0">{{ school_class.name }}</h5>
+                  {% if user.role == 'admin' %}
+                  <a href="{% url 'add_section' %}?school_class={{ school_class.pk }}"
+                     class="btn btn-sm btn-outline-primary">+ Section</a>
+                  {% endif %}
+               </div>
+               <div class="card-body">
+                  <table class="table table-sm mb-0">
+                     <thead class="thead-light">
+                        <tr><th>Section</th><th>Class Teacher</th><th>Room</th><th>Students</th></tr>
+                     </thead>
+                     <tbody>
+                        {% for section in school_class.sections.all %}
+                        <tr>
+                           <td><a href="{% url 'section_detail' section.pk %}">{{ section.name }}</a></td>
+                           <td>{{ section.class_teacher.full_name|default:"—" }}</td>
+                           <td>{{ section.room|default:"—" }}</td>
+                           <td>{{ section.student_count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-muted">No sections yet.</td></tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+         {% empty %}
+         <div class="col-12"><p class="text-muted">No classes yet.</p></div>
+         {% endfor %}
+      </div>
+   </div>
+</div>
+{% endblock %}

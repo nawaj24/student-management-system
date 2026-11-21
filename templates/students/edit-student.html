@@ -60,8 +60,13 @@
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
-                                        <label>Class</label>
-                                        <input type="text" name="student_class" class="form-control" value="{{ student.student_class }}">
+                                        <label>Class &amp; Section</label>
+                                        <select name="section" class="form-control">
+                                            <option value="">Not assigned</option>
+                                            {% for section in sections %}
+                                            <option value="{{ section.pk }}" {% if section.pk == student.section_id %}selected{% endif %}>{{ section }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -86,12 +91,6 @@
                                     <div class="form-group">
                                         <label>Admission Number</label>
                                         <input type="text" name="admission_number" class="form-control" value="{{ student.admission_number }}">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Section</label>
-                                        <input type="text" name="section" class="form-control" value="{{ student.section }}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-6">

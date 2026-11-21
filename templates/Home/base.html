@@ -151,6 +151,16 @@
                            {% endif %}
                         </ul>
                      </li>
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-school"></i> <span> Classes</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'class_list' %}">Classes &amp; Sections</a></li>
+                           {% if user.role == 'admin' %}
+                           <li><a href="{% url 'add_class' %}">Class Add</a></li>
+                           <li><a href="{% url 'add_section' %}">Section Add</a></li>
+                           {% endif %}
+                        </ul>
+                     </li>
                      {% endif %}
 
                      <li class="menu-title">

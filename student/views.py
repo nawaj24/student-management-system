@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from home_auth.decorators import role_required
 from school.utils import create_notification
+from classroom.models import Section
 from .models import Parent, Student
 
 @role_required('admin')
@@ -14,12 +15,11 @@ def add_student(request):
         student_id = request.POST.get('student_id')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('date_of_birth')
-        student_class = request.POST.get('student_class')
         religion = request.POST.get('religion')
         joining_date = request.POST.get('joining_date')
         mobile_number = request.POST.get('mobile_number')
         admission_number = request.POST.get('admission_number')
-        section = request.POST.get('section')
+        section_id = request.POST.get('section') or None
         student_image = request.FILES.get('student_image')
 
         # Retrieve parent data from the form
@@ -55,12 +55,11 @@ def add_student(request):
             student_id= student_id,
             gender= gender,
             date_of_birth= date_of_birth,
-            student_class= student_class,
             religion= religion,
             joining_date= joining_date,
             mobile_number = mobile_number,
             admission_number = admission_number,
-            section = section,
+            section_id = section_id,
             student_image = student_image,
             parent = parent
         )
@@ -68,13 +67,14 @@ def add_student(request):
         messages.success(request, "Student added Successfully")
         return redirect("student_list")
 
-    return render(request,"students/add-student.html")
+    sections = Section.objects.select_related('school_class')
+    return render(request, "students/add-student.html", {'sections': sections})
 
 
 
 @role_required('admin', 'teacher')
 def student_list(request):
-    student_list = Student.objects.select_related('parent').all()
+    student_list = Student.objects.select_related('parent', 'section__school_class')
     context = {
         'student_list': student_list,
     }
@@ -91,12 +91,11 @@ def edit_student(request,slug):
         student_id = request.POST.get('student_id')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('date_of_birth')
-        student_class = request.POST.get('student_class')
         religion = request.POST.get('religion')
         joining_date = request.POST.get('joining_date')
         mobile_number = request.POST.get('mobile_number')
         admission_number = request.POST.get('admission_number')
-        section = request.POST.get('section')
+        section_id = request.POST.get('section') or None
         student_image = request.FILES.get('student_image')  if request.FILES.get('student_image') else student.student_image
 
         # Retrieve parent data from the form
@@ -119,18 +118,19 @@ def edit_student(request,slug):
         student.student_id= student_id
         student.gender= gender
         student.date_of_birth= date_of_birth
-        student.student_class= student_class
         student.religion= religion
         student.joining_date= joining_date
         student.mobile_number = mobile_number
         student.admission_number = admission_number
-        student.section = section
+        student.section_id = section_id
         student.student_image = student_image
         student.save()
         create_notification(request.user, f"Updated Student: {student.first_name} {student.last_name}")
         
         return redirect("student_list")
-    return render(request, "students/edit-student.html",{'student':student, 'parent':parent} )
+    sections = Section.objects.select_related('school_class')
+    context = {'student': student, 'parent': parent, 'sections': sections}
+    return render(request, "students/edit-student.html", context)
 
 
 @role_required('admin', 'teacher')
