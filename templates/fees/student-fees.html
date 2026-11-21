@@ -1,0 +1,96 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <h3 class="page-title">Fees · {{ student.first_name }} {{ student.last_name }}</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'view_student' student.slug %}">Student</a></li>
+            <li class="breadcrumb-item active">{{ student.section }}</li>
+         </ul>
+      </div>
+
+      <div class="row">
+         <div class="col-lg-8">
+            <div class="card">
+               <div class="card-header d-flex justify-content-between">
+                  <h5 class="card-title mb-0">Fees</h5>
+                  <span class="badge {% if total_due %}badge-danger{% else %}badge-success{% endif %}">
+                     Total due: Rs. {{ total_due|floatformat:"2g" }}
+                  </span>
+               </div>
+               <div class="card-body">
+                  <table class="table mb-0">
+                     <thead class="thead-light">
+                        <tr><th>Fee</th><th>Due Date</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th></tr>
+                     </thead>
+                     <tbody>
+                        {% for line in lines %}
+                        <tr>
+                           <td>{{ line.fee.title }}</td>
+                           <td>{{ line.fee.due_date|date:"d M Y" }}</td>
+                           <td>{{ line.fee.amount|floatformat:"2g" }}</td>
+                           <td>{{ line.paid|floatformat:"2g" }}</td>
+                           <td>{{ line.balance|floatformat:"2g" }}</td>
+                           <td>
+                              {% if line.status == 'Paid' %}<span class="badge badge-success">Paid</span>
+                              {% elif line.status == 'Overdue' %}<span class="badge badge-danger">Overdue</span>
+                              {% elif line.status == 'Partial' %}<span class="badge badge-warning">Partial</span>
+                              {% else %}<span class="badge badge-secondary">Unpaid</span>{% endif %}
+                           </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted">No fees for this class.</td></tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+
+            <div class="card">
+               <div class="card-header"><h5 class="card-title mb-0">Payment History</h5></div>
+               <div class="card-body">
+                  <table class="table mb-0">
+                     <thead class="thead-light">
+                        <tr><th>Receipt</th><th>Fee</th><th>Amount</th><th>Method</th><th>Date</th></tr>
+                     </thead>
+                     <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                           <td><a href="{% url 'fee_receipt' payment.pk %}">{{ payment.receipt_number }}</a></td>
+                           <td>{{ payment.fee.title }}</td>
+                           <td>Rs. {{ payment.amount|floatformat:"2g" }}</td>
+                           <td>{{ payment.get_method_display }}</td>
+                           <td>{{ payment.paid_on|date:"d M Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-muted">No payments yet.</td></tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+
+         <div class="col-lg-4">
+            <div class="card">
+               <div class="card-header"><h5 class="card-title mb-0">Collect Payment</h5></div>
+               <div class="card-body">
+                  <form method="post" novalidate>
+                     {% csrf_token %}
+                     {% for field in form %}
+                     <div class="form-group">
+                        <label>{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                     </div>
+                     {% endfor %}
+                     <button type="submit" class="btn btn-primary btn-block">Receive Payment</button>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

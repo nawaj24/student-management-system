@@ -177,6 +177,16 @@
                            {% endif %}
                         </ul>
                      </li>
+                     {% if user.role == 'admin' %}
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Fees</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'fee_list' %}">Fee List</a></li>
+                           <li><a href="{% url 'add_fee' %}">Fee Add</a></li>
+                           <li><a href="{% url 'pending_dues' %}">Pending Dues</a></li>
+                        </ul>
+                     </li>
+                     {% endif %}
                      {% endif %}
 
                      <li class="menu-title">

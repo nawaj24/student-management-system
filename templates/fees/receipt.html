@@ -1,0 +1,40 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<style>
+   @media print {
+      .header, .sidebar, .no-print { display: none !important; }
+      .page-wrapper { margin: 0 !important; padding: 0 !important; }
+   }
+</style>
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      {% for message in messages %}
+      <div class="alert alert-success no-print">{{ message }}</div>
+      {% endfor %}
+
+      <div class="no-print mb-3">
+         <a href="{% url 'student_fees' payment.student.slug %}" class="btn btn-link">← Back to fees</a>
+         <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print"></i> Print</button>
+      </div>
+
+      <div class="card" style="max-width:720px">
+         <div class="card-body">
+            <div class="d-flex justify-content-between">
+               <div><h3 class="mb-0">PreSkool</h3><span class="text-muted">Fee Receipt</span></div>
+               <div class="text-right">
+                  <h5 class="mb-0">{{ payment.receipt_number }}</h5>
+                  <span class="text-muted">{{ payment.paid_on|date:"d M Y" }}</span>
+               </div>
+            </div>
+            <hr>
+            <p><strong>Student:</strong> {{ payment.student.first_name }} {{ payment.student.last_name }}
+               ({{ payment.student.student_id }})</p>
+            <p><strong>Fee:</strong> {{ payment.fee.title }} · {{ payment.fee.school_class }}</p>
+            <p><strong>Method:</strong> {{ payment.get_method_display }}</p>
+            <h2 class="text-success mt-4">Rs. {{ payment.amount|floatformat:"2g" }}</h2>
+            <p class="text-muted mb-0">Received by {{ payment.received_by.first_name|default:"Admin" }}</p>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
