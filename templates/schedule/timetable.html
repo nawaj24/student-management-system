@@ -1,0 +1,84 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Timetable</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item active">Weekly class routine</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' and section %}
+            <div class="col-auto">
+               <a href="{% url 'add_period' %}?section={{ section.pk }}" class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Add Period
+               </a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
+      <div class="card">
+         <div class="card-body">
+            <form method="get" class="row">
+               <div class="col-12 col-sm-9">
+                  <select name="section" class="form-control" required>
+                     <option value="">Select class and section</option>
+                     {% for item in sections %}
+                     <option value="{{ item.pk }}" {% if item == section %}selected{% endif %}>{{ item }}</option>
+                     {% endfor %}
+                  </select>
+               </div>
+               <div class="col-12 col-sm-3">
+                  <button class="btn btn-primary btn-block">Show Timetable</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+      {% if section %}
+      <div class="card">
+         <div class="card-header"><h5 class="card-title mb-0">{{ section }}</h5></div>
+         <div class="card-body table-responsive">
+            <table class="table table-bordered text-center mb-0">
+               <thead class="thead-light">
+                  <tr>
+                     <th>Period</th>
+                     {% for value, label in days %}<th>{{ label }}</th>{% endfor %}
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for row in rows %}
+                  <tr>
+                     <th>{{ row.number }}</th>
+                     {% for period in row.cells %}
+                     <td>
+                        {% if period %}
+                        <b>{{ period.subject.name }}</b><br>
+                        <small class="text-muted">
+                           {{ period.teacher.first_name|default:"No teacher" }}<br>
+                           {{ period.start_time|time:"H:i" }} – {{ period.end_time|time:"H:i" }}
+                        </small>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                     </td>
+                     {% endfor %}
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="7" class="text-muted">No periods yet.</td></tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+      {% endif %}
+   </div>
+</div>
+{% endblock %}

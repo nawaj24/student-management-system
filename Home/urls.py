@@ -13,6 +13,7 @@ urlpatterns = [
     path('attendance/', include('attendance.urls')),
     path('exams/', include('exams.urls')),
     path('fees/', include('fees.urls')),
+    path('schedule/', include('schedule.urls')),
     path('authentication/', include("home_auth.urls")),
 ]
 

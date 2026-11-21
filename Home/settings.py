@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'attendance',
     'exams',
     'fees',
+    'schedule',
     'home_auth',
 ]
 

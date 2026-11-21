@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from attendance.models import Attendance
 from classroom.models import SchoolClass
+from schedule.models import Event
 from student.models import Student
 from teacher.models import Teacher
 
@@ -45,5 +46,6 @@ def get_dashboard_stats():
         'attendance_today': (
             round(present_today * 100 / marked_today.count()) if marked_today.exists() else None
         ),
+        'upcoming_events': Event.objects.filter(start_date__gte=today)[:3],
         'recent_students': recent.order_by('-joining_date', '-id')[:5],
     }
