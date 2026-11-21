@@ -1,0 +1,75 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<style>
+   /* When printing, hide the menus and show only the card */
+   @media print {
+      .header, .sidebar, .no-print { display: none !important; }
+      .page-wrapper { margin: 0 !important; padding: 0 !important; }
+   }
+</style>
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header no-print">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Report Card</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'exam_result' exam.pk %}">Result</a></li>
+                  <li class="breadcrumb-item active">{{ row.student.first_name }}</li>
+               </ul>
+            </div>
+            <div class="col-auto">
+               <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print"></i> Print</button>
+            </div>
+         </div>
+      </div>
+
+      <div class="card">
+         <div class="card-body">
+            <div class="text-center mb-4">
+               <h3 class="mb-1">PreSkool</h3>
+               <h5 class="text-muted">{{ exam.name }} · {{ exam.start_date|date:"Y" }}</h5>
+            </div>
+            <p>
+               <strong>Name:</strong> {{ row.student.first_name }} {{ row.student.last_name }} &nbsp;&nbsp;
+               <strong>Class:</strong> {{ row.student.section }} &nbsp;&nbsp;
+               <strong>Roll / ID:</strong> {{ row.student.student_id }}
+            </p>
+            <table class="table table-bordered">
+               <thead class="thead-light">
+                  <tr><th>Subject</th><th>Full Marks</th><th>Pass Marks</th><th>Obtained</th><th>Grade</th></tr>
+               </thead>
+               <tbody>
+                  {% for line in lines %}
+                  <tr {% if line.failed %}class="text-danger"{% endif %}>
+                     <td>{{ line.subject.name }}</td>
+                     <td>{{ exam.full_marks }}</td>
+                     <td>{{ exam.pass_marks }}</td>
+                     <td>{{ line.marks|default_if_none:"—" }}</td>
+                     <td>{{ line.grade }}</td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+               <tfoot>
+                  <tr><th>Total</th><th colspan="2"></th><th>{{ row.total }}</th><th>{{ row.grade }}</th></tr>
+               </tfoot>
+            </table>
+            <div class="row text-center mt-4">
+               <div class="col"><h4>{{ row.percent }}%</h4><span class="text-muted">Percentage</span></div>
+               <div class="col"><h4>{{ row.rank }} / {{ out_of }}</h4><span class="text-muted">Rank in class</span></div>
+               <div class="col">
+                  <h4>{% if attendance is not None %}{{ attendance }}%{% else %}—{% endif %}</h4>
+                  <span class="text-muted">Attendance</span>
+               </div>
+               <div class="col">
+                  <h4 class="{% if row.passed %}text-success{% else %}text-danger{% endif %}">
+                     {% if row.passed %}PASS{% else %}FAIL{% endif %}
+                  </h4>
+                  <span class="text-muted">Result</span>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

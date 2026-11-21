@@ -1,0 +1,75 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <h3 class="page-title">Enter Marks</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'exam_list' %}">Exams</a></li>
+            <li class="breadcrumb-item active">{{ exam }}</li>
+         </ul>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+         {{ message }}
+      </div>
+      {% endfor %}
+
+      <div class="card">
+         <div class="card-body">
+            <form method="get" class="row">
+               <div class="col-12 col-sm-8">
+                  <select name="subject" class="form-control" required>
+                     <option value="">Select subject</option>
+                     {% for item in subjects %}
+                     <option value="{{ item.pk }}" {% if item == subject %}selected{% endif %}>{{ item }}</option>
+                     {% endfor %}
+                  </select>
+               </div>
+               <div class="col-12 col-sm-4">
+                  <button class="btn btn-primary btn-block">Load Students</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+      {% if subject %}
+      <div class="card">
+         <div class="card-header">
+            <h5 class="card-title mb-0">{{ subject.name }} · out of {{ exam.full_marks }} (pass {{ exam.pass_marks }})</h5>
+         </div>
+         <div class="card-body">
+            <form method="post">
+               {% csrf_token %}
+               <table class="table mb-0">
+                  <thead class="thead-light">
+                     <tr><th>Section</th><th>Student</th><th style="width:220px">Marks</th></tr>
+                  </thead>
+                  <tbody>
+                     {% for row in rows %}
+                     <tr>
+                        <td>{{ row.student.section.name }}</td>
+                        <td>{{ row.student.first_name }} {{ row.student.last_name }}</td>
+                        <td>
+                           <input type="number" name="marks_{{ row.student.pk }}" value="{{ row.value }}"
+                                  min="0" max="{{ exam.full_marks }}"
+                                  class="form-control {% if row.error %}is-invalid{% endif %}">
+                           {% if row.error %}<small class="text-danger">{{ row.error }}</small>{% endif %}
+                        </td>
+                     </tr>
+                     {% empty %}
+                     <tr><td colspan="3" class="text-center text-muted">No students in this class.</td></tr>
+                     {% endfor %}
+                  </tbody>
+               </table>
+               {% if rows %}
+               <button type="submit" class="btn btn-primary mt-3">Save Marks</button>
+               {% endif %}
+            </form>
+         </div>
+      </div>
+      {% endif %}
+   </div>
+</div>
+{% endblock %}
