@@ -1,8 +1,8 @@
 from django.db.models import Count
 from django.utils import timezone
 
-from home_auth.models import CustomUser
 from student.models import Student
+from teacher.models import Teacher
 
 
 def class_sort_key(name):
@@ -29,7 +29,7 @@ def get_dashboard_stats():
 
     return {
         'total_students': students.count(),
-        'total_teachers': CustomUser.objects.filter(is_teacher=True).count(),
+        'total_teachers': Teacher.objects.count(),
         'total_classes': len(by_class),
         'new_this_month': new_this_month.count(),
         'chart_data': {

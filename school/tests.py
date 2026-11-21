@@ -168,6 +168,7 @@ class DashboardStatsTests(TestCase):
         from django.core.management import call_command
         from io import StringIO
         call_command('seed_students', count=30, stdout=StringIO())
+        call_command('seed_teachers', stdout=StringIO())  # 8 Teacher records (Episode 3)
         make_user('teacher1@school.com', is_teacher=True)
         make_user('teacher2@school.com', is_teacher=True)
 
@@ -175,7 +176,7 @@ class DashboardStatsTests(TestCase):
         from school.dashboard import get_dashboard_stats
         stats = get_dashboard_stats()
         self.assertEqual(stats['total_students'], 30)
-        self.assertEqual(stats['total_teachers'], 2)
+        self.assertEqual(stats['total_teachers'], 8)
         self.assertEqual(sum(stats['chart_data']['class_counts']), 30)
         self.assertEqual(sum(stats['chart_data']['gender_counts']), 30)
         self.assertEqual(len(stats['recent_students']), 5)

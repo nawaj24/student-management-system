@@ -1,0 +1,54 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">{{ teacher.full_name }}</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'teacher_list' %}">Teachers</a></li>
+                  <li class="breadcrumb-item active">Details</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="col-auto">
+               <a href="{% url 'edit_teacher' teacher.slug %}" class="btn btn-primary">
+                  <i class="fas fa-pen"></i> Edit
+               </a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      <div class="card">
+         <div class="card-body">
+            <div class="media align-items-center mb-4">
+               {% if teacher.photo %}
+               <img src="{{ teacher.photo.url }}" class="rounded-circle mr-4" width="96" alt="">
+               {% else %}
+               <img src="{% static 'assets/img/user.jpg' %}" class="rounded-circle mr-4"
+                    width="96" alt="">
+               {% endif %}
+               <div class="media-body">
+                  <h4 class="mb-1">{{ teacher.full_name }}</h4>
+                  <p class="text-muted mb-0">
+                     {{ teacher.subject }} Teacher · {{ teacher.teacher_id }}
+                  </p>
+               </div>
+            </div>
+            <table class="table mb-0">
+               <tr><th>Gender</th><td>{{ teacher.gender }}</td></tr>
+               <tr><th>Date of Birth</th><td>{{ teacher.date_of_birth|date:"d M Y" }}</td></tr>
+               <tr><th>Mobile</th><td>{{ teacher.mobile_number }}</td></tr>
+               <tr><th>Email</th><td>{{ teacher.email }}</td></tr>
+               <tr><th>Qualification</th><td>{{ teacher.qualification }}</td></tr>
+               <tr><th>Joining Date</th><td>{{ teacher.joining_date|date:"d M Y" }}</td></tr>
+               <tr><th>Address</th><td>{{ teacher.address }}</td></tr>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
