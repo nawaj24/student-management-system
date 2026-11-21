@@ -132,6 +132,27 @@
                      </li>
                      {% endif %}
 
+                     {% if user.role == 'admin' or user.role == 'teacher' %}
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'department_list' %}">Department List</a></li>
+                           {% if user.role == 'admin' %}
+                           <li><a href="{% url 'add_department' %}">Department Add</a></li>
+                           {% endif %}
+                        </ul>
+                     </li>
+                     <li class="submenu">
+                        <a href="#"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                           <li><a href="{% url 'subject_list' %}">Subject List</a></li>
+                           {% if user.role == 'admin' %}
+                           <li><a href="{% url 'add_subject' %}">Subject Add</a></li>
+                           {% endif %}
+                        </ul>
+                     </li>
+                     {% endif %}
+
                      <li class="menu-title">
                         <span>Account</span>
                      </li>

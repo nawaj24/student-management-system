@@ -1,0 +1,50 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <h3 class="page-title">{{ title }}</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url back %}">Back to list</a></li>
+            <li class="breadcrumb-item active">{{ title }}</li>
+         </ul>
+      </div>
+
+      <div class="card">
+         <div class="card-body">
+            <form method="post" novalidate>
+               {% csrf_token %}
+               <div class="row">
+                  {% for field in form %}
+                  <div class="col-12 col-sm-6">
+                     <div class="form-group">
+                        <label>{{ field.label }}</label>
+                        {% if field.widget_type == 'checkboxselectmultiple' %}
+                           {% for choice in field %}
+                           <div class="form-check">
+                              {{ choice.tag }}
+                              <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                 {{ choice.choice_label }}
+                              </label>
+                           </div>
+                           {% endfor %}
+                        {% else %}
+                           {{ field }}
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                     </div>
+                  </div>
+                  {% endfor %}
+                  <div class="col-12">
+                     <button type="submit" class="btn btn-primary">Save</button>
+                     <a href="{% url back %}" class="btn btn-link">Cancel</a>
+                  </div>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

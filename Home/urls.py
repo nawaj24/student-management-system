@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include("school.urls")),
     path('student/', include("student.urls")),
     path('teachers/', include('teacher.urls')),
+    path('academics/', include('academics.urls')),
     path('authentication/', include("home_auth.urls")),
 ]
 

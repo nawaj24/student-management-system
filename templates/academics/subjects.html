@@ -1,0 +1,93 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Subjects</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item active">Subject List</li>
+               </ul>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="col-auto">
+               <a href="{% url 'add_subject' %}" class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Add Subject
+               </a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
+      <div class="card">
+         <div class="card-body">
+            <form method="get" class="mb-4">
+               <select name="department" class="form-control" onchange="this.form.submit()">
+                  <option value="">All departments</option>
+                  {% for department in departments %}
+                  <option value="{{ department.slug }}" {% if department.slug == selected %}selected{% endif %}>
+                     {{ department.name }}
+                  </option>
+                  {% endfor %}
+               </select>
+            </form>
+
+            <div class="table-responsive">
+               <table class="table table-hover table-center mb-0">
+                  <thead class="thead-light">
+                     <tr>
+                        <th>Code</th>
+                        <th>Subject</th>
+                        <th>Department</th>
+                        <th>Teachers</th>
+                        {% if user.role == 'admin' %}<th class="text-right">Action</th>{% endif %}
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for subject in subjects %}
+                     <tr>
+                        <td>{{ subject.code }}</td>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.department.name }}</td>
+                        <td>
+                           {% for teacher in subject.teachers.all %}
+                           <span class="badge badge-info">{{ teacher.full_name }}</span>
+                           {% empty %}
+                           <span class="text-muted">—</span>
+                           {% endfor %}
+                        </td>
+                        {% if user.role == 'admin' %}
+                        <td class="text-right">
+                           <a href="{% url 'edit_subject' subject.pk %}"
+                              class="btn btn-sm bg-success-light mr-2">
+                              <i class="fas fa-pen"></i>
+                           </a>
+                           <form action="{% url 'delete_subject' subject.pk %}"
+                                 method="post" style="display:inline"
+                                 onsubmit="return confirm('Delete this subject?')">
+                              {% csrf_token %}
+                              <button class="btn btn-sm bg-danger-light">
+                                 <i class="fas fa-trash"></i>
+                              </button>
+                           </form>
+                        </td>
+                        {% endif %}
+                     </tr>
+                     {% empty %}
+                     <tr>
+                        <td colspan="5" class="text-center text-muted">No subjects found.</td>
+                     </tr>
+                     {% endfor %}
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

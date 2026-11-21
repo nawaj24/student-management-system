@@ -44,6 +44,16 @@
                <tr><th>Mobile</th><td>{{ teacher.mobile_number }}</td></tr>
                <tr><th>Email</th><td>{{ teacher.email }}</td></tr>
                <tr><th>Qualification</th><td>{{ teacher.qualification }}</td></tr>
+               <tr>
+                  <th>Subjects</th>
+                  <td>
+                     {% for subject in teacher.subjects.all %}
+                     <span class="badge badge-info">{{ subject.name }}</span>
+                     {% empty %}
+                     <span class="text-muted">No subjects assigned</span>
+                     {% endfor %}
+                  </td>
+               </tr>
                <tr><th>Joining Date</th><td>{{ teacher.joining_date|date:"d M Y" }}</td></tr>
                <tr><th>Address</th><td>{{ teacher.address }}</td></tr>
             </table>
