@@ -187,7 +187,8 @@ class DashboardStatsTests(TestCase):
         self.assertEqual(numbers, sorted(numbers))
 
     def test_admin_dashboard_shows_real_numbers(self):
-        admin = CustomUser.objects.create_superuser(username='boss@school.com', email='boss@school.com', password='StrongPass123')
+        admin = CustomUser.objects.create_superuser(
+            username='boss@school.com', email='boss@school.com', password='StrongPass123')
         self.client.force_login(admin)
         page = self.client.get(reverse('admin_dashboard')).content.decode()
         self.assertIn('<h3>30</h3>', page)
@@ -199,4 +200,4 @@ class DashboardStatsTests(TestCase):
         self.client.force_login(teacher)
         page = self.client.get(reverse('teacher_dashboard')).content.decode()
         self.assertIn('Students by Class', page)
-        self.assertNotIn('Add Student</a>', page)
+        self.assertNotIn('Add Student', page)
