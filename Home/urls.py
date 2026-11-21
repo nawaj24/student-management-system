@@ -10,6 +10,7 @@ urlpatterns = [
     path('teachers/', include('teacher.urls')),
     path('academics/', include('academics.urls')),
     path('classes/', include('classroom.urls')),
+    path('attendance/', include('attendance.urls')),
     path('authentication/', include("home_auth.urls")),
 ]
 

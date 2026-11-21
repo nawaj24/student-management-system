@@ -1,0 +1,69 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <h3 class="page-title">Monthly Attendance Report</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'mark_attendance' %}">Mark Attendance</a></li>
+            <li class="breadcrumb-item active">Report</li>
+         </ul>
+      </div>
+
+      <div class="card">
+         <div class="card-body">
+            <form method="get" class="row">
+               <div class="col-12 col-sm-5">
+                  <select name="section" class="form-control" required>
+                     <option value="">Select class and section</option>
+                     {% for item in sections %}
+                     <option value="{{ item.pk }}" {% if item == section %}selected{% endif %}>{{ item }}</option>
+                     {% endfor %}
+                  </select>
+               </div>
+               <div class="col-12 col-sm-4">
+                  <input type="month" name="month" class="form-control" value="{{ month }}">
+               </div>
+               <div class="col-12 col-sm-3">
+                  <button class="btn btn-primary btn-block">Show Report</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+      {% if section %}
+      <div class="card">
+         <div class="card-header"><h5 class="card-title mb-0">{{ section }} · {{ month }}</h5></div>
+         <div class="card-body">
+            <table class="table table-hover mb-0">
+               <thead class="thead-light">
+                  <tr><th>Student</th><th>Present</th><th>Late</th><th>Absent</th><th>Attendance</th></tr>
+               </thead>
+               <tbody>
+                  {% for row in rows %}
+                  <tr>
+                     <td>{{ row.student.first_name }} {{ row.student.last_name }}</td>
+                     <td>{{ row.student.present }}</td>
+                     <td>{{ row.student.late }}</td>
+                     <td>{{ row.student.absent }}</td>
+                     <td>
+                        {% if row.percent is None %}
+                        <span class="text-muted">No data</span>
+                        {% elif row.percent < 75 %}
+                        <span class="badge badge-danger">{{ row.percent }}% · low</span>
+                        {% else %}
+                        <span class="badge badge-success">{{ row.percent }}%</span>
+                        {% endif %}
+                     </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="5" class="text-center text-muted">No students in this section.</td></tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+      {% endif %}
+   </div>
+</div>
+{% endblock %}

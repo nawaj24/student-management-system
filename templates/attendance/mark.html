@@ -1,0 +1,92 @@
+{% extends 'Home/base.html' %}
+{% block body %}
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <h3 class="page-title">Mark Attendance</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item active">Choose a section and a date</li>
+         </ul>
+      </div>
+
+      {% for message in messages %}
+      <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+         {{ message }}
+      </div>
+      {% endfor %}
+
+      <div class="card">
+         <div class="card-body">
+            <form method="get" class="row">
+               <div class="col-12 col-sm-5">
+                  <select name="section" class="form-control" required>
+                     <option value="">Select class and section</option>
+                     {% for item in sections %}
+                     <option value="{{ item.pk }}" {% if item == section %}selected{% endif %}>{{ item }}</option>
+                     {% endfor %}
+                  </select>
+               </div>
+               <div class="col-12 col-sm-4">
+                  <input type="date" name="date" class="form-control" value="{{ day|date:'Y-m-d' }}">
+               </div>
+               <div class="col-12 col-sm-3">
+                  <button class="btn btn-primary btn-block">Load Students</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+      {% if section %}
+      <div class="card">
+         <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+               {{ section }} · {{ day|date:"d M Y" }}
+               {% if already_marked %}<span class="badge badge-info ml-2">Already marked — you can update it</span>{% endif %}
+            </h5>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="markAll('P')">All Present</button>
+         </div>
+         <div class="card-body">
+            <form method="post">
+               {% csrf_token %}
+               <table class="table table-hover mb-0">
+                  <thead class="thead-light">
+                     <tr><th>ID</th><th>Student</th><th>Status</th></tr>
+                  </thead>
+                  <tbody>
+                     {% for student, current in rows %}
+                     <tr>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.first_name }} {{ student.last_name }}</td>
+                        <td>
+                           {% for value, label in statuses %}
+                           <label class="mr-3 mb-0">
+                              <input type="radio" name="status_{{ student.pk }}" value="{{ value }}"
+                                     {% if value == current %}checked{% endif %}>
+                              {{ label }}
+                           </label>
+                           {% endfor %}
+                        </td>
+                     </tr>
+                     {% empty %}
+                     <tr><td colspan="3" class="text-center text-muted">No students in this section.</td></tr>
+                     {% endfor %}
+                  </tbody>
+               </table>
+               {% if rows %}
+               <button type="submit" class="btn btn-primary mt-3">Save Attendance</button>
+               {% endif %}
+            </form>
+         </div>
+      </div>
+      {% endif %}
+   </div>
+</div>
+
+<script>
+   // Tick the same status for every student in one click
+   function markAll(value) {
+      document.querySelectorAll('input[type=radio][value="' + value + '"]')
+         .forEach(radio => radio.checked = true);
+   }
+</script>
+{% endblock %}
